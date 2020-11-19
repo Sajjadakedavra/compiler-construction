@@ -1,0 +1,7 @@
+E:\sajjad university\6th semester\CC\lexicalPhase\bin\Debug\lexicalPhase.exe.config
+E:\sajjad university\6th semester\CC\lexicalPhase\bin\Debug\lexicalPhase.exe
+E:\sajjad university\6th semester\CC\lexicalPhase\bin\Debug\lexicalPhase.pdb
+E:\sajjad university\6th semester\CC\lexicalPhase\obj\Debug\lexicalPhase.csprojAssemblyReference.cache
+E:\sajjad university\6th semester\CC\lexicalPhase\obj\Debug\lexicalPhase.csproj.CoreCompileInputs.cache
+E:\sajjad university\6th semester\CC\lexicalPhase\obj\Debug\lexicalPhase.exe
+E:\sajjad university\6th semester\CC\lexicalPhase\obj\Debug\lexicalPhase.pdb
