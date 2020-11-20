@@ -15,9 +15,33 @@ namespace lexicalPhase
 
         }
 
-        void nextCharacter()
+        public static bool NextCharacter(char ch, char chPlusOne)
         {
-
+            if (Char.Equals(ch, '<') 
+                && (
+                Char.Equals(chPlusOne, '<') 
+                || (Char.Equals(chPlusOne, '>')) 
+                || (Char.Equals(chPlusOne, '=')))
+                )
+            {
+                return true;
+            }
+            else if (Char.Equals(ch, '>')
+                && (Char.Equals(chPlusOne, '>'))
+                || (Char.Equals(chPlusOne, '='))
+                )
+            {
+                return true;
+            }
+            else if (Char.Equals(ch, '&') && Char.Equals(chPlusOne, '&'))
+            {
+                return true;
+            }
+           
+            else
+            {
+                return false;
+            }
         }
 
 
@@ -54,7 +78,7 @@ namespace lexicalPhase
 
             int initial = 0;
             bool isPreviousQuote = false;
-       
+            bool opCheck;
 
             for (int j = 0; j<words.Count; j++)
             {
@@ -122,12 +146,35 @@ namespace lexicalPhase
                             if(wordList[initial] != null)
                             {
                                 initial++;
-                                wordList[initial] += words.ElementAt(j);//.ToString();
-                                initial++;  //doesnt break alphabets in new word immediately after op as if removed
+
+                                if (NextCharacter(words.ElementAt(j), words.ElementAt(j + 1)) == false)
+                                {
+                                    wordList[initial] += words.ElementAt(j);//.ToString();
+                                    //wordList[initial] += Char.ToString(words.ElementAt(j));
+                                }
+                                else
+                                {
+                                    //wordList[initial] += words.ElementAt(j) + words.ElementAt(j+1);//.ToString();
+                                    wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(j + 1));
+                                    j++;
+                                }
+                               
+                                initial++;  //doesnt break alphabets in new word immediately after op if removed
                             }
                             else
-                            {
-                                wordList[initial] += words.ElementAt(j);//.ToString();
+                            {   //have to see if next character is present when reading from txt file warna exception dega
+                                if (NextCharacter(words.ElementAt(j), words.ElementAt(j + 1)) == false)
+                                {
+                                    wordList[initial] += words.ElementAt(j);//.ToString();
+                                    //wordList[initial] += Char.ToString(words.ElementAt(j));
+                                }
+                                else
+                                {
+                                    //wordList[initial] += words.ElementAt(j) + words.ElementAt(j + 1);//.ToString();
+                                    wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(j + 1));
+                                    j++;
+                                }
+                                   
                                 initial++;
                             }
                             
