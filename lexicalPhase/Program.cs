@@ -24,12 +24,14 @@ namespace lexicalPhase
         static void Main(string[] args)
         {
             string[] wordList = new string[200];
+            List<string> listOfWords = new List<string>();
             List<char> words = new List<char>();
-            char[] charArr = new char[500];
+          
+            
             char ch;
             int Tchar = 0;
             StreamReader reader;
-            reader = new StreamReader(@"C:\Users\Sajjad\Desktop\toRead1.txt");
+            reader = new StreamReader(@"C:\Users\Sajjad\Desktop\toRead3.txt");
             int i = 0;
 
             do
@@ -37,10 +39,9 @@ namespace lexicalPhase
                 ch = (char)reader.Read();
                 Console.Write(ch);
                 
-                //if (Char.IsWhiteSpace(ch) == false)
-                //{
+                
                     words.Add(ch);
-                //}
+
                 
               
                 Tchar++;
@@ -63,10 +64,12 @@ namespace lexicalPhase
                 if (Char.Equals(words.ElementAt(j), '"') && isPreviousQuote == false)
                 {
                     isPreviousQuote = true;
+                    Console.WriteLine("value of previous quote at: " + words.ElementAt(j) + "is: " + isPreviousQuote);
                 }
-                else
+                else if (Char.Equals(words.ElementAt(j), '"') && isPreviousQuote == true)
                 {
                     isPreviousQuote = false;
+                    Console.WriteLine("value of previous quote at: " + words.ElementAt(j) + "is: " + isPreviousQuote);
                 }
 
               
@@ -74,19 +77,38 @@ namespace lexicalPhase
 
                 if (isPreviousQuote == false)
                 {
-                    if ((!Char.IsWhiteSpace(words.ElementAt(j))//!String.Equals(words.ElementAt(j), " ")
+                    if ((!Char.IsWhiteSpace(words.ElementAt(j))
+                     &&
+                    !Char.Equals(words.ElementAt(j), '+')
                     &&
-                   !Char.Equals(words.ElementAt(j), "+")
-                   &&
-                   !Char.Equals(words.ElementAt(j), "-")
-                   &&
-                   !Char.Equals(words.ElementAt(j), "*")
-                   &&
-                   !Char.Equals(words.ElementAt(j), "/"))
-                   )
-                    {
+                    !Char.Equals(words.ElementAt(j), '-')
+                    &&
+                    !Char.Equals(words.ElementAt(j), '*')
+                    &&
+                    !Char.Equals(words.ElementAt(j), '/')
+                    &&
+                    !Char.Equals(words.ElementAt(j), '<')
+                    &&
+                    !Char.Equals(words.ElementAt(j), '>')
+                    &&
+                    !Char.Equals(words.ElementAt(j), '(')
+                    &&
+                    !Char.Equals(words.ElementAt(j), ')')
+                    &&
+                    !Char.Equals(words.ElementAt(j), '{')
+                    &&
+                    !Char.Equals(words.ElementAt(j), '}')
+                    &&
+                    !Char.Equals(words.ElementAt(j), '=')
+                    &&
+                    !Char.Equals(words.ElementAt(j), '!'))
+                    )
+
+                    {   
+                        
                         wordList[initial] += words.ElementAt(j);
                     }
+
                     else
                     {
                         if (Char.IsWhiteSpace(words.ElementAt(j)) || words.ElementAt(j).Equals('\n'))
@@ -100,12 +122,12 @@ namespace lexicalPhase
                             if(wordList[initial] != null)
                             {
                                 initial++;
-                                wordList[initial] = words.ElementAt(j).ToString();
-                                //initial++;
+                                wordList[initial] += words.ElementAt(j);//.ToString();
+                                initial++;  //doesnt break alphabets in new word immediately after op as if removed
                             }
                             else
                             {
-                                wordList[initial] = words.ElementAt(j).ToString();
+                                wordList[initial] += words.ElementAt(j);//.ToString();
                                 initial++;
                             }
                             
@@ -121,7 +143,7 @@ namespace lexicalPhase
                 
 
                 
-            }
+            } //end of for loop---------------------------------------------------------
 
 
 
@@ -129,6 +151,20 @@ namespace lexicalPhase
             {
                 Console.WriteLine(wordList[k]);
             }
+
+            for (int l = 0; l<wordList.Length; l++)
+            {
+                if (wordList[l] != null)
+                {
+                    listOfWords.Add(wordList[l]);
+                }
+            }
+            /*
+            Console.WriteLine("\n------------printing list of words now-----------\n");
+            foreach (var item in listOfWords)
+            {
+                Console.WriteLine(item);
+            }*/
 
          
 
