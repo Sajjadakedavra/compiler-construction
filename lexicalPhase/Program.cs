@@ -108,7 +108,7 @@ namespace lexicalPhase
               
 
 
-                if (isPreviousQuote == false)
+               if (isPreviousQuote == false)
                 {
                     if ((!Char.IsWhiteSpace(words.ElementAt(j))
                      &&
@@ -134,65 +134,88 @@ namespace lexicalPhase
                     &&
                     !Char.Equals(words.ElementAt(j), '=')
                     &&
-                    !Char.Equals(words.ElementAt(j), '!'))
+                    !Char.Equals(words.ElementAt(j), '!')
+                    &&
+                    !Char.Equals(words.ElementAt(j), '"'))
                     )
 
                     {   
-                        
                         wordList[initial] += words.ElementAt(j);
                     }
 
+                    //else if char is any one of the words defined above
                     else
-                    {
+                    {   
+                        //if char is whitespace or newline then ignore it. dont create new word for it
                         if (Char.IsWhiteSpace(words.ElementAt(j)) || words.ElementAt(j).Equals('\n'))
-                        {   if (wordList[initial] != null)
+                        {   if (wordList[initial] != null)  //if there is something already in word location then increment
                             {
                                 initial++;
                             }
                         }
-                        else
-                        {  
-                            if(wordList[initial] != null)
-                            {
-                                initial++;
 
-                                if (NextCharacter(words.ElementAt(j), words.ElementAt(j + 1)) == false)
-                                {
-                                    wordList[initial] += words.ElementAt(j);//.ToString();
-                                    //wordList[initial] += Char.ToString(words.ElementAt(j));
-                                }
-                                else
-                                {
-                                    //wordList[initial] += words.ElementAt(j) + words.ElementAt(j+1);//.ToString();
-                                    wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(j + 1));
-                                    j++;
-                                }
-                               
-                                initial++;  //doesnt break alphabets in new word immediately after op if removed
-                            }
-                            else
-                            {   //have to see if next character is present when reading from txt file warna exception dega
-                                if (NextCharacter(words.ElementAt(j), words.ElementAt(j + 1)) == false)
-                                {
-                                    wordList[initial] += words.ElementAt(j);//.ToString();
-                                    //wordList[initial] += Char.ToString(words.ElementAt(j));
-                                }
-                                else
-                                {
-                                    //wordList[initial] += words.ElementAt(j) + words.ElementAt(j + 1);//.ToString();
-                                    wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(j + 1));
-                                    j++;
-                                }
-                                   
+                        else //else if there isnt anything in word location then...
+                        {  
+                            //checks the closing quotation, appends it to existing word and then increments to new word
+                            if (Char.Equals(words.ElementAt(j), '"'))
+                            {   
+                                wordList[initial] += Char.ToString(words.ElementAt(j));
                                 initial++;
                             }
+
+                            //else if char is not a closing quotation...
+                            else
+                            {
+                                if (wordList[initial] != null)
+                                {
+                                    initial++;
+
+                                    if (NextCharacter(words.ElementAt(j), words.ElementAt(j + 1)) == false)
+                                    {
+                                        wordList[initial] += words.ElementAt(j);//.ToString();
+                                        //wordList[initial] += Char.ToString(words.ElementAt(j));
+                                    }
+
+                                    else
+                                    {
+                                        //wordList[initial] += words.ElementAt(j) + words.ElementAt(j+1);//.ToString();
+                                        wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(j + 1));
+                                        j++;
+                                    }
+
+                                    initial++;  //doesnt break alphabets in new word immediately after op if removed
+                                }
+
+                                else
+                                {   //have to see if next character is present when reading from txt file warna exception dega
+                                    if (NextCharacter(words.ElementAt(j), words.ElementAt(j + 1)) == false)
+                                    {
+                                        wordList[initial] += words.ElementAt(j);//.ToString();
+                                                                                //wordList[initial] += Char.ToString(words.ElementAt(j));
+                                    }
+                                    else
+                                    {
+                                        //wordList[initial] += words.ElementAt(j) + words.ElementAt(j + 1);//.ToString();
+                                        wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(j + 1));
+                                        j++;
+                                    }
+
+                                    initial++;
+                                }
+                            }
+                            
                             
                         }
 
                     }
                 }
+
                 else
-                {
+                {   
+                    if (wordList[initial] != null && Char.Equals(words.ElementAt(j), '"'))
+                    {
+                        initial++;
+                    }
                     wordList[initial] += words.ElementAt(j);
                 }
                    
