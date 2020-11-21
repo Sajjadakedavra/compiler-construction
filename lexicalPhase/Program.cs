@@ -17,27 +17,36 @@ namespace lexicalPhase
 
         public static bool NextCharacter(char ch, char chPlusOne)
         {
-            if (Char.Equals(ch, '<') 
-                && (
-                Char.Equals(chPlusOne, '<') 
-                || (Char.Equals(chPlusOne, '>')) 
-                || (Char.Equals(chPlusOne, '=')))
-                )
+            if (Char.Equals(ch, '<') && (Char.Equals(chPlusOne, '>'))) 
             {
                 return true;
             }
-            else if (Char.Equals(ch, '>')
-                && (Char.Equals(chPlusOne, '>'))
-                || (Char.Equals(chPlusOne, '='))
-                )
+
+            else if (Char.Equals(ch, '<') && (Char.Equals(chPlusOne, '=')))
             {
                 return true;
             }
-            else if (Char.Equals(ch, '&') && Char.Equals(chPlusOne, '&'))
+
+            else if (Char.Equals(ch, '>') && (Char.Equals(chPlusOne, '=') ) )
             {
                 return true;
             }
-           
+
+            else if (Char.Equals(ch, '&') && Equals(chPlusOne, '&'))
+            {
+                return true;
+            }
+
+            else if (Char.Equals(ch, '|') && Char.Equals(chPlusOne, '|'))
+            {
+                return true;
+            }
+
+            else if (Char.Equals(ch, '=') && Char.Equals(chPlusOne, '='))
+            {
+                return true;
+            }
+
             else
             {
                 return false;
