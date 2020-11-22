@@ -64,7 +64,7 @@ namespace lexicalPhase
             char ch;
             int Tchar = 0;
             StreamReader reader;
-            reader = new StreamReader(@"C:\Users\Sajjad\Desktop\toRead3.txt");
+            reader = new StreamReader(@"C:\Users\Sajjad\Desktop\toRead.txt");
             int i = 0;
 
             do
@@ -91,10 +91,19 @@ namespace lexicalPhase
 
             for (int j = 0; j<words.Count; j++)
             {
-                
-                
+                /*
+               if (isPreviousQuote == true && Char.Equals(words.ElementAt(j), '\\'))
+                {
+                    Console.WriteLine("-----------------------");
+                    Console.WriteLine("element at " + j + ": " + words.ElementAt(j));
+                    Console.WriteLine("element at " + j+1 + ": " + words.ElementAt(j+1));
+                    Console.WriteLine("element at " + j+2 + ": " + words.ElementAt(j+2));
+                    Console.WriteLine("element at " + j+3 + ": " + words.ElementAt(j+3));
+                    wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(j+1));
+                    j += 2;
+                }*/
 
-                if (Char.Equals(words.ElementAt(j), '"') && isPreviousQuote == false)
+                 if (Char.Equals(words.ElementAt(j), '"') && isPreviousQuote == false)
                 {
                     isPreviousQuote = true;
                     Console.WriteLine("value of previous quote at: " + words.ElementAt(j) + "is: " + isPreviousQuote);
@@ -215,8 +224,20 @@ namespace lexicalPhase
                     if (wordList[initial] != null && Char.Equals(words.ElementAt(j), '"'))
                     {
                         initial++;
+                        wordList[initial] += words.ElementAt(j);
                     }
-                    wordList[initial] += words.ElementAt(j);
+
+                    //if char is backslash then accept the very next char whatever it may be and dont check the next char in for loop
+                    else if (Char.Equals(words.ElementAt(j), '\\'))
+                    {
+                        wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(j + 1));
+                        j++;
+                    }
+                    //else if its neither a backslash nor a closing quote then accept it just like any string (i.e wihtout new word)
+                    else
+                    {
+                        wordList[initial] += words.ElementAt(j);
+                    }
                 }
                    
                 
