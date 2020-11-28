@@ -11,10 +11,6 @@ namespace lexicalPhase
     class Program
     {
        
-        void currentCharacter()
-        {
-
-        }
 
         public static bool IsDigitsOnly(string str)
         {
@@ -124,8 +120,8 @@ namespace lexicalPhase
                     isPreviousQuote = false;
                     Console.WriteLine("value of previous quote at: " + words.ElementAt(j) + "is: " + isPreviousQuote);
                 }
+                 
 
-              
 
 
                if (isPreviousQuote == false)
@@ -182,6 +178,23 @@ namespace lexicalPhase
                             }
                         }
 
+                        //if consecutive char are beginning of multi line comments
+                        else if (Char.Equals(words.ElementAt(j), '/') && Char.Equals(words.ElementAt(j + 1), '*'))
+                        {
+                            if (wordList[initial] != null)
+                            {
+                                initial++;
+                            }
+                                
+                            j = j + 2;
+                            while (j < words.Count - 1 && !Char.Equals(words.ElementAt(j), '*') && !Char.Equals(words.ElementAt(j + 1), '/'))
+                            {
+                                j++;
+                                Console.WriteLine("the word in while is: " + words.ElementAt(j));
+                            }
+                            j++;
+                        }
+
                         else //else if there is anything except whitespace/newline then...
                         {  
                             //checks the closing quotation, appends it to existing word and then increments to new word
@@ -223,7 +236,7 @@ namespace lexicalPhase
                                             initial++;
                                             j = temp;
 
-                                           
+
                                         }
                                         else if (!(Char.IsDigit(words.ElementAt(temp))) && !Char.IsWhiteSpace(words.ElementAt(temp)))//else if the first char after . is not a digit
                                         {
@@ -369,12 +382,12 @@ namespace lexicalPhase
                     listOfWords.Add(wordList[l]);
                 }
             }
-            
+            /*
             Console.WriteLine("\n------------printing list of words now-----------\n");
             foreach (var item in listOfWords)
             {
                 Console.WriteLine(item);
-            }
+            }*/
 
          
 
