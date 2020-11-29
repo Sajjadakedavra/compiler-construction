@@ -82,8 +82,9 @@ namespace lexicalPhase
             char ch;
             int Tchar = 0;
             StreamReader reader;
-            reader = new StreamReader(@"C:\Users\Sajjad\Desktop\toRead6.txt");
+            reader = new StreamReader(@"C:\Users\Sajjad\Desktop\toRead3.txt");
             int i = 0;
+            int[] lineNumberArr = new int[wordList.Length];
 
             do
             {
@@ -105,7 +106,7 @@ namespace lexicalPhase
 
             int initial = 0;
             bool isPreviousQuote = false;
-            bool opCheck;
+            int lineNumber = 1;
 
             for (int j = 0; j<words.Count; j++)
             {
@@ -121,7 +122,10 @@ namespace lexicalPhase
                     Console.WriteLine("value of previous quote at: " + words.ElementAt(j) + "is: " + isPreviousQuote);
                 }
                  
-
+                 if (Char.Equals(words.ElementAt(j), '\n'))
+                {
+                    lineNumber++;
+                }
 
 
                if (isPreviousQuote == false)
@@ -165,6 +169,7 @@ namespace lexicalPhase
 
                     {   
                         wordList[initial] += words.ElementAt(j);
+                        lineNumberArr[initial] = lineNumber;
                     }
 
                     //else if char is any one of the words defined above
@@ -201,6 +206,7 @@ namespace lexicalPhase
                             if (Char.Equals(words.ElementAt(j), '"'))
                             {   
                                 wordList[initial] += Char.ToString(words.ElementAt(j));
+                                lineNumberArr[initial] = lineNumber;
                                 initial++;
                             }
                             
@@ -233,6 +239,7 @@ namespace lexicalPhase
 
 
                                             wordList[initial] += tempArr[0] + tempArr[1];
+                                            lineNumberArr[initial] = lineNumber;
                                             initial++;
                                             j = temp;
 
@@ -243,6 +250,7 @@ namespace lexicalPhase
                                             Console.WriteLine("first char after . is not a digit and also not a whitespace");
                                             initial ++;
                                             wordList[initial] += words.ElementAt(j);
+                                            lineNumberArr[initial] = lineNumber;
                                             initial++;
                                         }
 
@@ -253,6 +261,7 @@ namespace lexicalPhase
                                         Console.WriteLine("Char after . is a breaker");
                                         initial++;
                                         wordList[initial] += words.ElementAt(j);    //append dot char with previous word
+                                        lineNumberArr[initial] = lineNumber;
                                     }
                                 }
                                 else if (IsDigitsOnly(wordList[initial]) == false)//if previous word in wordlist[inital] is not all digits
@@ -268,11 +277,13 @@ namespace lexicalPhase
                                         {
                                             initial++;
                                             wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(temp));
+                                            lineNumberArr[initial] = lineNumber;
                                             j = temp;
                                         }
                                         else
                                         {
                                             wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(temp));
+                                            lineNumberArr[initial] = lineNumber;
                                             j = temp;
                                         }
                                     }
@@ -282,11 +293,13 @@ namespace lexicalPhase
                                         {
                                             initial++;
                                             wordList[initial] += words.ElementAt(j);
+                                            lineNumberArr[initial] = lineNumber;
                                             initial++;
                                         }
                                         else
                                         {
                                             wordList[initial] += words.ElementAt(j);
+                                            lineNumberArr[initial] = lineNumber;
                                             initial++;
                                         }
                                         
@@ -305,6 +318,7 @@ namespace lexicalPhase
                                     if (NextCharacter(words.ElementAt(j), words.ElementAt(j + 1)) == false)
                                     {
                                         wordList[initial] += words.ElementAt(j);//.ToString();
+                                        lineNumberArr[initial] = lineNumber;
                                         //wordList[initial] += Char.ToString(words.ElementAt(j));
                                     }
 
@@ -312,6 +326,7 @@ namespace lexicalPhase
                                     {
                                         //wordList[initial] += words.ElementAt(j) + words.ElementAt(j+1);//.ToString();
                                         wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(j + 1));
+                                        lineNumberArr[initial] = lineNumber;
                                         j++;
                                     }
 
@@ -323,12 +338,14 @@ namespace lexicalPhase
                                     if (NextCharacter(words.ElementAt(j), words.ElementAt(j + 1)) == false)
                                     {
                                         wordList[initial] += words.ElementAt(j);//.ToString();
-                                                                                //wordList[initial] += Char.ToString(words.ElementAt(j));
+                                        lineNumberArr[initial] = lineNumber;
+                                        //wordList[initial] += Char.ToString(words.ElementAt(j));
                                     }
                                     else
                                     {
                                         //wordList[initial] += words.ElementAt(j) + words.ElementAt(j + 1);//.ToString();
                                         wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(j + 1));
+                                        lineNumberArr[initial] = lineNumber;
                                         j++;
                                     }
 
@@ -348,18 +365,21 @@ namespace lexicalPhase
                     {
                         initial++;
                         wordList[initial] += words.ElementAt(j);
+                        lineNumberArr[initial] = lineNumber;
                     }
 
                     //if char is backslash then accept the very next char whatever it may be and dont check the next char in for loop
                     else if (Char.Equals(words.ElementAt(j), '\\'))
                     {
                         wordList[initial] += Char.ToString(words.ElementAt(j)) + Char.ToString(words.ElementAt(j + 1));
+                        lineNumberArr[initial] = lineNumber;
                         j++;
                     }
                     //else if its neither a backslash nor a closing quote then accept it just like any string (i.e wihtout new word)
                     else
                     {
                         wordList[initial] += words.ElementAt(j);
+                        lineNumberArr[initial] = lineNumber;
                     }
                 }
                    
@@ -374,6 +394,8 @@ namespace lexicalPhase
             {
                 Console.WriteLine(wordList[k]);
             }
+            Console.WriteLine("total lines: "+ lineNumber);
+            List<int> listOfLineNumber = new List<int>();
 
             for (int l = 0; l<wordList.Length; l++)
             {
@@ -382,14 +404,31 @@ namespace lexicalPhase
                     listOfWords.Add(wordList[l]);
                 }
             }
-            /*
+
+            for (int m = 0; m < lineNumberArr.Length; m++)
+            {
+                if (lineNumberArr[m] != 0)
+                {
+                    listOfLineNumber.Add(lineNumberArr[m]);
+                }
+            }
+
+            
             Console.WriteLine("\n------------printing list of words now-----------\n");
             foreach (var item in listOfWords)
             {
                 Console.WriteLine(item);
-            }*/
+            }
 
-         
+            Console.WriteLine("\n------------printing list of line number now-----------\n");
+            foreach (var lines in listOfLineNumber)
+            {
+                Console.WriteLine(lines);
+            }
+            Console.WriteLine("ttoal words are: " + listOfWords.Count);
+            Console.WriteLine("ttoal line numbers are: " + listOfLineNumber.Count);
+
+
 
             reader.Close();
             reader.Dispose();
