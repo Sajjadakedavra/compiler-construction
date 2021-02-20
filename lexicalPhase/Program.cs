@@ -10,6 +10,7 @@ namespace lexicalPhase
 {
     class Program
     {
+        public static string temporaryStorage;
         public static List<string> listOfWords = new List<string>();
         public static List<int> listOfLineNumber = new List<int>();
 
@@ -78,12 +79,12 @@ namespace lexicalPhase
             //List<string> listOfWords = new List<string>();
             //List<int> listOfLineNumber = new List<int>();
             List<char> words = new List<char>();
-            char[] wordBreaker = new[] { ' ', '\n', '+', '-', '*', '/', '<', '>', '(', ')', '{', '}', '=', '!', '"', '[', ']', ';' };
+            char[] wordBreaker = new[] { ' ', '\n', '+', '-', '*', '/', '<', '>', '(', ')', '{', '}', '=', '!', '"', '[', ']', ';', ':' };
 
             char ch;
             int Tchar = 0;
             StreamReader reader;
-            reader = new StreamReader(@"C:\Users\Sajjad\Desktop\toRead3.txt");
+            reader = new StreamReader(@"C:\Users\Sajjad\Desktop\lexical_sample_file.txt");
             int i = 0;
             int[] lineNumberArr = new int[wordList.Length];
 
@@ -112,12 +113,12 @@ namespace lexicalPhase
             for (int j = 0; j < words.Count; j++)
             {
 
-                if (Char.Equals(words.ElementAt(j), '"') && isPreviousQuote == false)
+                if ((Char.Equals(words.ElementAt(j), '"') || Char.Equals(words.ElementAt(j), '\'')) && isPreviousQuote == false)
                 {
                     isPreviousQuote = true;
                     Console.WriteLine("value of previous quote at: " + words.ElementAt(j) + "is: " + isPreviousQuote);
                 }
-                else if (Char.Equals(words.ElementAt(j), '"') && isPreviousQuote == true)
+                else if ((Char.Equals(words.ElementAt(j), '"') || Char.Equals(words.ElementAt(j), '\'')) && isPreviousQuote == true)
                 {
                     isPreviousQuote = false;
                     Console.WriteLine("value of previous quote at: " + words.ElementAt(j) + "is: " + isPreviousQuote);
@@ -172,7 +173,9 @@ namespace lexicalPhase
                     &&
                     !Char.Equals(words.ElementAt(j), ';')
                     &&
-                    !Char.Equals(words.ElementAt(j), '.'))
+                    !Char.Equals(words.ElementAt(j), '.')
+                    &&
+                    !Char.Equals(words.ElementAt(j), ':'))
                     )
 
                     {
@@ -212,7 +215,7 @@ namespace lexicalPhase
                         else //else if there is anything except whitespace/newline then...
                         {
                             //checks the closing quotation, appends it to existing word and then increments to new word
-                            if (Char.Equals(words.ElementAt(j), '"'))
+                            if ((Char.Equals(words.ElementAt(j), '"')) || (Char.Equals(words.ElementAt(j), '\'')))
                             {
                                 wordList[initial] += Char.ToString(words.ElementAt(j));
                                 lineNumberArr[initial] = lineNumber;
@@ -221,6 +224,36 @@ namespace lexicalPhase
 
                             else if (Char.Equals(words.ElementAt(j), '.')) //if char is .
                             {
+                               //changed from here on 21/02/2021 at 1:39 am
+                                if (!String.IsNullOrEmpty(temporaryStorage))
+                                {
+                                    Console.WriteLine("word in temporart storage is: " + temporaryStorage);
+                                    if (String.Equals(temporaryStorage, "."))
+                                    {
+                                        Console.WriteLine("word in temporart storage is: " + temporaryStorage);
+                                        if (Char.IsDigit(wordList[initial][0]))
+                                        {
+                                            Console.WriteLine("char is digit if condiiton true: " + wordList[initial--] + words.ElementAt(j));
+                                            Console.WriteLine("bhai -2 pe hai: " + wordList[initial - 2]);
+                                            Console.WriteLine("bhai -1 pe hai: " + wordList[initial - 1]);
+                                            Console.WriteLine("bhai 0 pe hai: " + wordList[initial]);
+                                            Console.WriteLine("bhai 1 pe hai: " + wordList[initial + 1]);
+                                            wordList[initial] += wordList[initial + 1]; //agar recurring dot k agar pehla digit he to usky sath jor do
+                                            wordList[initial + 1] = "";
+                                            temporaryStorage = "";
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("char is digit if condiiton false: " + wordList[initial]);
+
+                                            temporaryStorage = "";
+                                        }
+                                    }
+                                    
+                                } //till here...................
+
+                                int lineNumberr = (new System.Diagnostics.StackFrame(0, true)).GetFileLineNumber();
+                                Console.WriteLine("executing line number: " + lineNumberr);
                                 Console.WriteLine("word at inital is: " + wordList[initial]);
                                 string[] tempArr = new string[2];
 
@@ -229,7 +262,7 @@ namespace lexicalPhase
                                     Console.WriteLine("previous word are all digits");
                                     int temp = j + 1;
                                     Console.WriteLine("char in temp is: " + words.ElementAt(temp));
-                                    if (!Char.Equals(words.ElementAt(temp), ('+', '-', '*', '/', '<', '>', '(', ')', '{', '}', '=', '!', '[', ']', '"', ';', '.')) && !Char.IsWhiteSpace(words.ElementAt(temp)))
+                                    if (!Char.Equals(words.ElementAt(temp), ('+', '-', '*', '/', '<', '>', '(', ')', '{', '}', '=', '!', '[', ']', '"', ';', '.', ':')) && !Char.IsWhiteSpace(words.ElementAt(temp)))
                                     {
                                         Console.WriteLine("char after . is not a breaker");
                                         if (Char.IsDigit(words.ElementAt(temp)))    //if the immediate char after dot is a digit
@@ -238,20 +271,48 @@ namespace lexicalPhase
                                             tempArr[0] += Char.ToString(words.ElementAt(j));    //saving . in separate array location
                                             tempArr[1] += Char.ToString(words.ElementAt(temp)); //saving char after .
                                             temp++;
-                                            while (temp < words.Count && !Char.Equals(words.ElementAt(temp), ('+', '-', '*', '/', '<', '>', '(', ')', '{', '}', '=', '!', '[', ']', '"', ';', '.')) && !Char.IsWhiteSpace(words.ElementAt(temp)))
+                                            /*while (temp < words.Count && !Char.Equals(words.ElementAt(temp), ('+', '-', '*', '/', '<', '>', '(', ')', '{', '}', '=', '!', '[', ']', '"', ';', '.', ':')) && !Char.IsWhiteSpace(words.ElementAt(temp)))
                                             {   //appenidn characters in temp until breaker 
                                                 Console.WriteLine("chars are not breakers");
+                                                Console.WriteLine("processing char: " + words.ElementAt(temp));
                                                 tempArr[1] += Char.ToString(words.ElementAt(temp));
                                                 Console.WriteLine("tempArrr[1] is: " + tempArr[1]);
                                                 temp++;
+                                            }*/
+
+                                            //78.98 walay k baad immediate dot nai print horha bas. other than that, working fine
+                                            while (temp < words.Count)
+                                            {
+                                                if (Char.Equals(words.ElementAt(temp), '.'))
+                                                {
+                                                    break;
+                                                }
+                                                else if  ((Char.Equals(words.ElementAt(temp), '+') || (Char.Equals(words.ElementAt(temp), '-') || (Char.Equals(words.ElementAt(temp), '*') || (Char.Equals(words.ElementAt(temp), '/') || (Char.Equals(words.ElementAt(temp), '<') || (Char.Equals(words.ElementAt(temp), '>') || (Char.Equals(words.ElementAt(temp), '(') || (Char.Equals(words.ElementAt(temp), ')') || (Char.Equals(words.ElementAt(temp), '[') || (Char.Equals(words.ElementAt(temp), ']') || (Char.Equals(words.ElementAt(temp), '=') || (Char.Equals(words.ElementAt(temp), '!') || (Char.Equals(words.ElementAt(temp), ';') || (Char.Equals(words.ElementAt(temp), ':'))))))))))))))))
+                                                    {
+                                                    break;
+                                                    }
+                                                else
+                                                {
+                                                    //appenidn characters in temp until breaker 
+                                                    Console.WriteLine("chars are not breakers");
+                                                    Console.WriteLine("processing char: " + words.ElementAt(temp));
+                                                    tempArr[1] += Char.ToString(words.ElementAt(temp));
+                                                    Console.WriteLine("tempArrr[1] is: " + tempArr[1]);
+                                                }
+                                                temp++;
                                             }
-
-
+                                            
                                             wordList[initial] += tempArr[0] + tempArr[1];
                                             lineNumberArr[initial] = lineNumber;
                                             initial++;
                                             j = temp;
-
+                                            Console.WriteLine("hello there: word at j is: " + words.ElementAt(j));
+                                            wordList[initial] += words.ElementAt(j);
+                                            // if (Char.IsDigit(words.ElementAt(j+1)))   CHECK HERE TO SOLVE DOT PROBLEM
+                                            initial++;
+                                            temporaryStorage = words.ElementAt(j).ToString();
+                                            
+                                            
 
                                         }
                                         else if (!(Char.IsDigit(words.ElementAt(temp))) && !Char.IsWhiteSpace(words.ElementAt(temp)))//else if the first char after . is not a digit
@@ -274,11 +335,11 @@ namespace lexicalPhase
                                     }
                                 }
                                 else if (IsDigitsOnly(wordList[initial]) == false)//if previous word in wordlist[inital] is not all digits
-                                {
+                                {   
                                     Console.WriteLine("word before . are not all digits");
                                     Console.WriteLine("current char in j is: " + words.ElementAt(j));
                                     int temp = j + 1;
-
+                                    Console.WriteLine("char in temp is : " + words.ElementAt(temp));
                                     if (Char.IsDigit(words.ElementAt(temp)))    //if char after . is digit
                                     {
                                         Console.WriteLine("-----------------------" + words.ElementAt(j));
@@ -315,7 +376,7 @@ namespace lexicalPhase
                                     }
 
                                 }
-                            }
+                            }   //end of . case
 
                             //else if char is not a closing quotation...
                             else
@@ -388,7 +449,7 @@ namespace lexicalPhase
 
                 else
                 {
-                    if (wordList[initial] != null && Char.Equals(words.ElementAt(j), '"'))
+                    if (wordList[initial] != null && (Char.Equals(words.ElementAt(j), '"') || Char.Equals(words.ElementAt(j), '\'')))
                     {
                         initial++;
                         wordList[initial] += words.ElementAt(j);
@@ -459,6 +520,7 @@ namespace lexicalPhase
             Tokens tk = new Tokens();
             tk.classification(listOfWords, listOfLineNumber);
 
+
             reader.Close();
             reader.Dispose();
             Console.WriteLine(" ");
@@ -499,7 +561,7 @@ class Tokens
 {
 
     string[] isKeywords = new string[] { "word", "number", "bool", "public", "private", "static", "class", "abstract", "final", "for", "if", "elif", "else", "function", "return", "Void", "Main" };
-    string[] isPunctuators = new string[] { ";", ",", "(", ")", "[", "]", "{", "}" };
+    string[] isPunctuators = new string[] { ";", ",", "(", ")", "[", "]", "{", "}", ":" };
     string[] isOperators = new string[] { "+", "-", "*", "/", "=", "&&", "||", "!", "<", ">", "<=", ">=", "==", "<>" };
 
     public Regex idRegex = new Regex (@"^[_]*[a-zA-Z]+[\w]*[a-zA-Z0-9]$");
@@ -684,6 +746,7 @@ class Tokens
             }
 
             arr2d[k, 1] = listOfWords.ElementAt(j);
+            if (j < listOfLineNumber.Count)
             arr2d[k, 2] = listOfLineNumber.ElementAt(j).ToString();
             k++;
         }
