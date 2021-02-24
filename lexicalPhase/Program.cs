@@ -8,11 +8,59 @@ using System.Text.RegularExpressions;
 
 namespace lexicalPhase
 {
-    class Program
+
+    class lexicalAnalyzer
     {
         public static string temporaryStorage;
         public static List<string> listOfWords = new List<string>();
         public static List<int> listOfLineNumber = new List<int>();
+
+        public static Tuple<int, int> characterChecking(string[] wordList, int initial, int j, List<char> words)
+        {
+            int i = 0;
+            Console.WriteLine("word in character checking is: " + words.ElementAt(j));
+            if (wordList[initial] != null)  //if there is already something in word list then goto empty place
+            {
+                initial++;
+            }
+            wordList[initial] += words.ElementAt(j);
+            i++;
+            //j++;    //for the next character from the stream
+
+            if (words.ElementAt(j + 1).Equals('\''))
+            {
+                j++;
+                Console.WriteLine("two direct single quotes wihtout space: " + words.ElementAt(j));
+                wordList[initial] += words.ElementAt(j);
+            }
+
+            else if (words.ElementAt(j + 1).Equals('\\'))
+            {
+                Console.WriteLine("backslash after opening quote");
+                while (i < 4)
+                {
+                    j++;
+                    wordList[initial] += words.ElementAt(j);
+                    i++;
+                }
+            }
+
+            else
+            {
+                Console.WriteLine("no backslash after opening quote");
+                while (i < 3)
+                {
+                    j++;
+                    wordList[initial] += words.ElementAt(j);
+                    i++;
+                }
+            }
+            Console.WriteLine("leaving j-1 with char: " + words.ElementAt(j - 1));
+            Console.WriteLine("leaving j with char: " + words.ElementAt(j));
+            Console.WriteLine("leaving j+1 with char: " + words.ElementAt(j + 1));
+            initial++;
+            return new Tuple<int, int>(initial, j);
+        }
 
         public static bool IsDigitsOnly(string str)
         {
@@ -113,17 +161,18 @@ namespace lexicalPhase
             for (int j = 0; j < words.Count; j++)
             {
 
-                if ((Char.Equals(words.ElementAt(j), '"') || Char.Equals(words.ElementAt(j), '\'')) && isPreviousQuote == false)
+
+                if ((Char.Equals(words.ElementAt(j), '"')) && isPreviousQuote == false) // || Char.Equals(words.ElementAt(j), '\'')) && isPreviousQuote == false)
                 {
                     isPreviousQuote = true;
                     Console.WriteLine("value of previous quote at: " + words.ElementAt(j) + "is: " + isPreviousQuote);
                 }
-                else if ((Char.Equals(words.ElementAt(j), '"') || Char.Equals(words.ElementAt(j), '\'')) && isPreviousQuote == true)
+                else if ((Char.Equals(words.ElementAt(j), '"')) && isPreviousQuote == true)// || Char.Equals(words.ElementAt(j), '\'')) && isPreviousQuote == true)
                 {
                     isPreviousQuote = false;
                     Console.WriteLine("value of previous quote at: " + words.ElementAt(j) + "is: " + isPreviousQuote);
                 }
-                
+
                 if (Char.Equals(words.ElementAt(j), '\n') && isPreviousQuote == true)
                 {
                     isPreviousQuote = false;
@@ -136,8 +185,15 @@ namespace lexicalPhase
                     lineNumber++;
                 }
 
+                if (isPreviousQuote == false && words.ElementAt(j).Equals('\''))
+                {
+                    var tuple = characterChecking(wordList, initial, j, words);
+                    initial = tuple.Item1;
+                    j = tuple.Item2;
+                }
 
-                if (isPreviousQuote == false)
+
+                else if (isPreviousQuote == false)
                 {
                     if ((!Char.IsWhiteSpace(words.ElementAt(j))
                      &&
@@ -215,7 +271,7 @@ namespace lexicalPhase
                         else //else if there is anything except whitespace/newline then...
                         {
                             //checks the closing quotation, appends it to existing word and then increments to new word
-                            if ((Char.Equals(words.ElementAt(j), '"')) || (Char.Equals(words.ElementAt(j), '\'')))
+                            if ((Char.Equals(words.ElementAt(j), '"')))// || (Char.Equals(words.ElementAt(j), '\'')))
                             {
                                 wordList[initial] += Char.ToString(words.ElementAt(j));
                                 lineNumberArr[initial] = lineNumber;
@@ -224,7 +280,7 @@ namespace lexicalPhase
 
                             else if (Char.Equals(words.ElementAt(j), '.')) //if char is .
                             {
-                               //changed from here on 21/02/2021 at 1:39 am
+                                //changed from here on 21/02/2021 at 1:39 am
                                 if (!String.IsNullOrEmpty(temporaryStorage))
                                 {
                                     Console.WriteLine("word in temporart storage is: " + temporaryStorage);
@@ -249,7 +305,7 @@ namespace lexicalPhase
                                             temporaryStorage = "";
                                         }
                                     }
-                                    
+
                                 } //till here...................
 
                                 int lineNumberr = (new System.Diagnostics.StackFrame(0, true)).GetFileLineNumber();
@@ -287,10 +343,10 @@ namespace lexicalPhase
                                                 {
                                                     break;
                                                 }
-                                                else if  ((Char.Equals(words.ElementAt(temp), '+') || (Char.Equals(words.ElementAt(temp), '-') || (Char.Equals(words.ElementAt(temp), '*') || (Char.Equals(words.ElementAt(temp), '/') || (Char.Equals(words.ElementAt(temp), '<') || (Char.Equals(words.ElementAt(temp), '>') || (Char.Equals(words.ElementAt(temp), '(') || (Char.Equals(words.ElementAt(temp), ')') || (Char.Equals(words.ElementAt(temp), '[') || (Char.Equals(words.ElementAt(temp), ']') || (Char.Equals(words.ElementAt(temp), '=') || (Char.Equals(words.ElementAt(temp), '!') || (Char.Equals(words.ElementAt(temp), ';') || (Char.Equals(words.ElementAt(temp), ':'))))))))))))))))
-                                                    {
+                                                else if ((Char.Equals(words.ElementAt(temp), '+') || (Char.Equals(words.ElementAt(temp), '-') || (Char.Equals(words.ElementAt(temp), '*') || (Char.Equals(words.ElementAt(temp), '/') || (Char.Equals(words.ElementAt(temp), '<') || (Char.Equals(words.ElementAt(temp), '>') || (Char.Equals(words.ElementAt(temp), '(') || (Char.Equals(words.ElementAt(temp), ')') || (Char.Equals(words.ElementAt(temp), '[') || (Char.Equals(words.ElementAt(temp), ']') || (Char.Equals(words.ElementAt(temp), '=') || (Char.Equals(words.ElementAt(temp), '!') || (Char.Equals(words.ElementAt(temp), ';') || (Char.Equals(words.ElementAt(temp), ':'))))))))))))))))
+                                                {
                                                     break;
-                                                    }
+                                                }
                                                 else
                                                 {
                                                     //appenidn characters in temp until breaker 
@@ -301,7 +357,7 @@ namespace lexicalPhase
                                                 }
                                                 temp++;
                                             }
-                                            
+
                                             wordList[initial] += tempArr[0] + tempArr[1];
                                             lineNumberArr[initial] = lineNumber;
                                             initial++;
@@ -311,8 +367,8 @@ namespace lexicalPhase
                                             // if (Char.IsDigit(words.ElementAt(j+1)))   CHECK HERE TO SOLVE DOT PROBLEM
                                             initial++;
                                             temporaryStorage = words.ElementAt(j).ToString();
-                                            
-                                            
+
+
 
                                         }
                                         else if (!(Char.IsDigit(words.ElementAt(temp))) && !Char.IsWhiteSpace(words.ElementAt(temp)))//else if the first char after . is not a digit
@@ -335,7 +391,7 @@ namespace lexicalPhase
                                     }
                                 }
                                 else if (IsDigitsOnly(wordList[initial]) == false)//if previous word in wordlist[inital] is not all digits
-                                {   
+                                {
                                     Console.WriteLine("word before . are not all digits");
                                     Console.WriteLine("current char in j is: " + words.ElementAt(j));
                                     int temp = j + 1;
@@ -409,11 +465,11 @@ namespace lexicalPhase
                                     {
                                         wordList[initial] += words.ElementAt(j);
                                     }
-                                   
+
                                 }
 
                                 else
-                                {   
+                                {
                                     if (j < words.Count - 1) ////only if j + 1 exists
                                     {
                                         //have to see if next character is present when reading from txt file warna exception dega
@@ -437,7 +493,7 @@ namespace lexicalPhase
                                     {
                                         wordList[initial] += words.ElementAt(j);
                                     }
-                                   
+
                                 }
                             }
 
@@ -449,7 +505,7 @@ namespace lexicalPhase
 
                 else
                 {
-                    if (wordList[initial] != null && (Char.Equals(words.ElementAt(j), '"') || Char.Equals(words.ElementAt(j), '\'')))
+                    if (wordList[initial] != null && (Char.Equals(words.ElementAt(j), '"')))// || Char.Equals(words.ElementAt(j), '\'')))
                     {
                         initial++;
                         wordList[initial] += words.ElementAt(j);
@@ -484,7 +540,7 @@ namespace lexicalPhase
                 Console.WriteLine(wordList[k]);
             }
             Console.WriteLine("total lines: " + lineNumber);
-            
+
 
             for (int l = 0; l < wordList.Length; l++)
             {
@@ -519,7 +575,12 @@ namespace lexicalPhase
 
             Tokens tk = new Tokens();
             tk.classification(listOfWords, listOfLineNumber);
-
+            
+            foreach(var token in tk.getTokens())
+            {
+                Console.WriteLine("(" + token.getCP() + ", " + token.getValue() + ", " + token.getLine() + ")" );
+            }
+            
 
             reader.Close();
             reader.Dispose();
@@ -528,12 +589,19 @@ namespace lexicalPhase
             Console.ReadLine();
 
         }
+      
+    }
 
-        
+    class Program
+    {
+        lexicalAnalyzer lex = new lexicalAnalyzer();
+
+
         static void Main(string[] args)
         {
-            WordBreaker();
-            
+            //WordBreaker();
+
+            lexicalAnalyzer.WordBreaker();
         }
     }
          
@@ -559,7 +627,12 @@ namespace lexicalPhase
 
 class Tokens
 {
-
+    List<Token> token;// = new List<Token>();
+    public string[,] arr2d = new string[200, 3];
+    public List<Token> getTokens()
+    {
+        return this.token;
+    }
     string[] isKeywords = new string[] { "word", "number", "bool", "public", "private", "static", "class", "abstract", "final", "for", "if", "elif", "else", "function", "return", "Void", "Main" };
     string[] isPunctuators = new string[] { ";", ",", "(", ")", "[", "]", "{", "}", ":" };
     string[] isOperators = new string[] { "+", "-", "*", "/", "=", "&&", "||", "!", "<", ">", "<=", ">=", "==", "<>" };
@@ -567,7 +640,7 @@ class Tokens
     public Regex idRegex = new Regex (@"^[_]*[a-zA-Z]+[\w]*[a-zA-Z0-9]$");
     public Regex wordRegex = new Regex ("(^\"([a-zA-Z0-9]|[\\w]|[\\W])*\"$)|(([a-zA-Z0-9]|[\\w]|[\\W])*)|(^\'([a-zA-Z0-9]|[\\w]|[\\W])*\'$)");
     public Regex numberRegex = new Regex(@"^[-\+][0-9]+$|^[0-9]+$|^[-\+][0-9]*[.][0-9]+$|^[0-9]*[.][0-9]+$");
-
+    public Regex r = new Regex("^[+-] ? ([0 - 9] + ([.][0 - 9] *) ?|[.][0 - 9] +)$");
 
     public bool isId(string id)
     {
@@ -634,17 +707,30 @@ class Tokens
         }
     }
 
-    
+ 
 
     public void classification(List<string> listOfWords, List<int> listOfLineNumber)
     {
+        this.token = new List<Token>();
         Console.WriteLine("running classification function");
-        string[,] arr2d = new string[200, 3];
+        //string[,] arr2d = new string[200, 3];
         int k = 0;
+        int lineNumber = 0;
 
         for (int j = 0; j < listOfWords.Count; j++)
         {
             Console.WriteLine("processing word: " + listOfWords.ElementAt(j));
+
+            if (j < listOfLineNumber.Count)
+            { lineNumber = listOfLineNumber.ElementAt(j); }
+            else
+            {
+                if (listOfLineNumber.Count > 0)
+                {
+                    var item = listOfLineNumber[listOfLineNumber.Count - 1];
+                    lineNumber = item;
+                }
+            }
 
             if (Char.IsLetter(listOfWords.ElementAt(j)[0]) || listOfWords.ElementAt(j).StartsWith("_") ||
                 Regex.IsMatch(listOfWords.ElementAt(j), @"^[a-zA-Z]+$"))
@@ -654,55 +740,52 @@ class Tokens
                     if (isKeywords.Contains(listOfWords.ElementAt(j)))
                     {
                         arr2d[k, 0] = "Keyword";
-                        //arr2d[k, 1] = listOfWords.ElementAt(j);
-                        //arr2d[k, 2] = listOfLineNumber.ElementAt(j).ToString();
+                        token.Add(new Token("Keyword", listOfWords.ElementAt(j), lineNumber));
+                       
                     }
                     else
                     {
                         arr2d[k, 0] = "Identifier";
-                        //arr2d[k, 1] = listOfWords.ElementAt(j);
-                        //arr2d[k, 2] = listOfLineNumber.ElementAt(j).ToString();
+                        token.Add(new Token("Identifier", listOfWords.ElementAt(j), lineNumber));
+                        
                     }
                     //k++;
                 }
                 else
                 {
                     arr2d[k, 0] = "Invalid Lexeme";
-                    //arr2d[k, 1] = listOfWords.ElementAt(j);
-                    //arr2d[k, 2] = listOfLineNumber.ElementAt(j).ToString();
-                    //k++;
+                    token.Add(new Token("Invalid Lexeme", listOfWords.ElementAt(j), lineNumber));
+                   
                 }
             }
 
-            else if (Char.IsDigit(listOfWords.ElementAt(j)[0]))
+            else if (Char.IsDigit(listOfWords.ElementAt(j)[0]) || Char.Equals(listOfWords.ElementAt(j)[0], '.')) 
             {
                 if (isNumber(listOfWords.ElementAt(j)))
                 {
                     arr2d[k, 0] = "Number";
+                    token.Add(new Token("Number", listOfWords.ElementAt(j), lineNumber));
                 }
                 else
                 {
                     arr2d[k, 0] = "Invalid Lexeme";
+                    token.Add(new Token("Invalid Lexeme", listOfWords.ElementAt(j), lineNumber));
                 }
-                //arr2d[k, 1] = listOfWords.ElementAt(j);
-                //arr2d[k, 2] = listOfLineNumber.ElementAt(j).ToString();
-                //k++;
+               
             }
             
             else if (isWord(listOfWords.ElementAt(j)))
             {
                 arr2d[k, 0] = "Word";
-                //arr2d[k, 1] = listOfWords.ElementAt(j);
-                //arr2d[k, 2] = listOfLineNumber.ElementAt(j).ToString();
-                //k++;
+                token.Add(new Token("Word", listOfWords.ElementAt(j), lineNumber));
+                
             }
 
             else if (isPunctuators.Contains(listOfWords.ElementAt(j)))
             {
                 arr2d[k, 0] = listOfWords.ElementAt(j);
-                //arr2d[k, 1] = listOfWords.ElementAt(j);
-                //arr2d[k, 2] = listOfLineNumber.ElementAt(j).ToString();
-                //k++;
+                token.Add(new Token(listOfWords.ElementAt(j), listOfWords.ElementAt(j), lineNumber));
+
             }
 
             else if (isOperators.Contains(listOfWords.ElementAt(j)))
@@ -714,11 +797,13 @@ class Tokens
                     || listOfWords.ElementAt(j).ToString().Equals("*") || listOfWords.ElementAt(j).ToString().Equals("/"))
                 {
                     arr2d[k, 0] = "Arithmetic OP";
+                    token.Add(new Token("Arithmetic OP", listOfWords.ElementAt(j), lineNumber));
                 }
 
                 else if (Char.Equals(listOfWords.ElementAt(j), '=') || listOfWords.ElementAt(j).ToString().Equals("="))
                 {
                     arr2d[k, 0] = "Assignment OP";
+                    token.Add(new Token("Assignment OP", listOfWords.ElementAt(j), lineNumber));
                 }
                
                 else if (Char.Equals(listOfWords.ElementAt(j), '<') || Char.Equals(listOfWords.ElementAt(j), '>')
@@ -727,27 +812,36 @@ class Tokens
                          listOfWords.ElementAt(j).Equals("==") || listOfWords.ElementAt(j).Equals("<>"))
                 {
                     arr2d[k, 0] = "ROP";
+                    token.Add(new Token("ROP", listOfWords.ElementAt(j), lineNumber));
                 }
 
                 else if (listOfWords.ElementAt(j).Equals("&&") || listOfWords.ElementAt(j).Equals("||") || listOfWords.ElementAt(j).Equals('!')
                         || listOfWords.ElementAt(j).ToString().Equals("&&") || listOfWords.ElementAt(j).ToString().Equals("||") || listOfWords.ElementAt(j).ToString().Equals("!"))
                 {
                     arr2d[k, 0] = "Logical OP";
+                    token.Add(new Token("Logical OP", listOfWords.ElementAt(j), lineNumber));
                 }
 
-                //arr2d[k, 1] = listOfWords.ElementAt(j);
-                //arr2d[k, 2] = listOfLineNumber.ElementAt(j).ToString();
-                //k++;
+               
             }
 
             else //if nothing matches then its invalid lexeme
             {
                 arr2d[k, 0] = "Invalid Lexeme";
+                token.Add(new Token("Invalid Lexeme", listOfWords.ElementAt(j), lineNumber));
             }
 
             arr2d[k, 1] = listOfWords.ElementAt(j);
             if (j < listOfLineNumber.Count)
-            arr2d[k, 2] = listOfLineNumber.ElementAt(j).ToString();
+            { arr2d[k, 2] = listOfLineNumber.ElementAt(j).ToString(); }
+            else
+            {
+                if (listOfLineNumber.Count > 0)
+                {
+                    var item = listOfLineNumber[listOfLineNumber.Count - 1];
+                    arr2d[k, 2] = item.ToString();
+                }
+            }
             k++;
         }
 
@@ -778,6 +872,8 @@ class Tokens
             Console.WriteLine(item);
         }
 
+       
+
 
         //Pass the filepath and filename to the StreamWriter Constructor
         StreamWriter sw = new StreamWriter("C:\\Users\\Sajjad\\Desktop\\lexemesList.txt");
@@ -795,3 +891,68 @@ class Tokens
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+internal class Token
+{
+    string classpart;
+    string valuepart;
+    int line;
+
+    public Token(string classpart, string valuepart, int line)
+    {
+        this.classpart = classpart;
+        this.valuepart = valuepart;
+        this.line = line;
+    }
+
+    public string getCP()
+    {
+        return this.classpart;
+    }
+
+    public string getValue()
+    {
+        return this.valuepart;
+    }
+
+    public int getLine()
+    {
+        return this.line;
+    }
+}
+
+
+
+
+
+
+
+
+
+
